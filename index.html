@@ -82,8 +82,9 @@ font-size:40px;
 background:#333;
 transform:rotateY(180deg);
 padding:10px;
+position:relative;
 }
-
+  
 .charImg{
 width:110px;
 height:110px;
@@ -117,7 +118,12 @@ background:linear-gradient(135deg,#300,#ff0000);
 
 .ur{
 position:relative;
-box-shadow:0 0 25px cyan;
+z-index:1;
+box-shadow:
+0 0 20px cyan,
+0 0 40px cyan,
+0 0 60px cyan;
+background:linear-gradient(135deg,#222,#00ffff);
 }
 
 .ur::before{
@@ -133,7 +139,8 @@ background:linear-gradient(
 red,orange,yellow,green,cyan,blue,violet,red
 );
 background-size:400%;
-animation:rainbowz-index:-1;
+animation:rainbowBorder 3s linear infinite;
+z-index:0;
 }
 
 @keyframes rainbow{
