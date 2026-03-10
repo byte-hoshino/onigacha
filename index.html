@@ -116,30 +116,18 @@ background:linear-gradient(135deg,#300,#ff0000);
 }
 
 .ur{
-position:relative;
-z-index:1;
 box-shadow:
 0 0 20px cyan,
 0 0 40px cyan,
-0 0 60px cyan;
+0 0 60px cyan,
+0 0 80px purple;
 background:linear-gradient(135deg,#222,#00ffff);
+animation:urGlow 1.5s infinite alternate;
 }
 
-.ur::before{
-content:"";
-position:absolute;
-top:-4px;
-left:-4px;
-right:-4px;
-bottom:-4px;
-border-radius:14px;
-background:linear-gradient(
-90deg,
-red,orange,yellow,green,cyan,blue,violet,red
-);
-background-size:400%;
-animation:rainbowBorder 3s linear infinite;
-z-index:0;
+@keyframes urGlow{
+0%{box-shadow:0 0 10px cyan}
+100%{box-shadow:0 0 60px cyan}
 }
 
 @keyframes rainbowBorder{
@@ -321,7 +309,7 @@ color:#ffd700;
 }
 
 #dex{
-margin-top:150px;
+margin-top:120px;
 }
 
 </style>
