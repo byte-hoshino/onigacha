@@ -89,11 +89,34 @@ width:110px;
 height:110px;
 object-fit:contain;
 margin-bottom:5px;
+
 }
 
-.ssr{box-shadow:0 0 30px gold;}
+.ssr{
+box-shadow:0 0 30px gold;
+background:linear-gradient(135deg,#444,#b8860b);
+}
+
+.ur{
+animation:rainbow 2s infinite linear;
+box-shadow:
+0 0 20px cyan,
+0 0 40px cyan,
+0 0 60px cyan;
+background:linear-gradient(135deg,#222,#00ffff);
+}
+
+.or{
+animation:explode 1s infinite;
+box-shadow:
+0 0 30px red,
+0 0 60px red,
+0 0 90px orange;
+background:linear-gradient(135deg,#300,#ff0000);
+}
 
 .ur{animation:rainbow 2s infinite linear;}
+
 
 @keyframes rainbow{
 0%{filter:hue-rotate(0deg)}
@@ -232,6 +255,51 @@ animation:particleMove 1s linear forwards;
 100%{transform:translate(var(--x),var(--y));opacity:0;}
 }
 
+.newBadge{
+color:gold;
+font-weight:bold;
+text-shadow:
+0 0 5px gold,
+0 0 10px gold,
+0 0 20px gold;
+animation:newGlow 1s infinite alternate;
+}
+
+@keyframes newGlow{
+0%{text-shadow:0 0 5px gold}
+100%{text-shadow:0 0 25px gold}
+}
+
+#stats{
+display:flex;
+justify-content:center;
+gap:40px;
+margin-top:20px;
+align-items:center;
+}
+
+.statBox{
+background:linear-gradient(45deg,#222,#444);
+padding:15px 25px;
+border-radius:10px;
+box-shadow:0 0 15px violet;
+}
+
+.statLabel{
+font-size:14px;
+opacity:0.7;
+}
+
+.statValue{
+font-size:28px;
+font-weight:bold;
+color:#ffd700;
+}
+
+#dex{
+margin-top:150px;
+}
+
 </style>
 </head>
 
@@ -246,10 +314,30 @@ animation:particleMove 1s linear forwards;
 
 <div id="results"></div>
 
+
+<div id="dex">
+
 <h2>図鑑</h2>
 
 <div id="rate"></div>
+<div id="stats">
+
+<div class="statBox">
+<div class="statLabel">総ガチャ回数</div>
+<div id="pullCount" class="statValue">0</div>
+</div>
+
+<div class="statBox">
+<div class="statLabel">SSR確定チケット</div>
+<div id="ticketCount" class="statValue">0</div>
+</div>
+
+<button onclick="ticketGacha()">SSR確定ガチャ</button>
+
+</div>
 <div id="collection"></div>
+
+
 
 <script>
 
@@ -361,7 +449,8 @@ OR:0.05
 }
 
 let collection=JSON.parse(localStorage.getItem("oniCollection"))||[]
-
+let totalPulls = Number(localStorage.getItem("oniTotalPulls")) || 0
+let ssrTickets = Number(localStorage.getItem("oniTickets")) || 0
 function getRarity(){
 
 let rand=Math.random()*100
@@ -400,7 +489,18 @@ for(let i=0;i<count;i++){
 setTimeout(()=>{
 
 let char=getChar()
+let isNew = !collection.includes(char.name)
+totalPulls++
 
+if(totalPulls % 100 === 0){
+ssrTickets++
+alert("SSR以上確定チケットを獲得！")
+}
+
+localStorage.setItem("oniTotalPulls",totalPulls)
+localStorage.setItem("oniTickets",ssrTickets)
+
+updateStats()
 pulled.push(char)
 
 if(!collection.includes(char.name)){
@@ -420,7 +520,7 @@ card.innerHTML=`
 <img src="${char.img}" class="charImg">
 <h3>${char.rarity}</h3>
 <p>${char.name}</p>
-
+${isNew ? '<div class="newBadge">NEW</div>' : ''}
 </div>
 
 </div>
@@ -564,7 +664,7 @@ div.className="slot"
 
 if(collection.includes(c.name)){
 
-div.innerHTML=`<img src="${c.img}"><br>${c.name}`
+div.innerHTML=`<img src="${c.img}"><br>${c.rarity}<br>${c.name}`
 
 }else{
 
@@ -585,6 +685,62 @@ document.getElementById("rate").innerText=
 }
 
 updateCollection()
+
+function ticketGacha(){
+
+if(ssrTickets<=0){
+alert("チケットがありません")
+return
+}
+
+ssrTickets--
+
+localStorage.setItem("oniTickets",ssrTickets)
+
+const pool = characters.filter(c =>
+c.rarity=="SSR" || c.rarity=="UR" || c.rarity=="OR"
+)
+
+let char = pool[Math.floor(Math.random()*pool.length)]
+
+const results=document.getElementById("results")
+results.innerHTML=""
+
+let card=document.createElement("div")
+card.className="card"
+
+card.innerHTML=`
+
+<div class="inner">
+<div class="back ${char.rarity.toLowerCase()}">
+
+<img src="${char.img}" class="charImg">
+<h3>${char.rarity}</h3>
+<p>${char.name}</p>
+
+</div>
+</div>
+`
+
+results.appendChild(card)
+
+setTimeout(()=>{
+card.querySelector(".inner").classList.add("flip")
+},100)
+
+playEffect(char)
+
+updateStats()
+
+}
+function updateStats(){
+
+document.getElementById("pullCount").innerText = totalPulls
+document.getElementById("ticketCount").innerText = ssrTickets
+
+}
+
+updateStats()
 
 </script>
 
